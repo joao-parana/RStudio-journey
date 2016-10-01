@@ -1,0 +1,253 @@
+---
+title: "first-R-doc"
+author: "João Antonio Ferreira"
+date: "1 de outubro de 2016"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Este é um documento R Markdown. Markdown é um formato simples para gerar documentos HTML, DOCX e PDF. Mais detalhes em [http://rmarkdown.rstudio.com](http://rmarkdown.rstudio.com).
+
+Clicando no botão **Knit** será gerado um docuemnto contendo o texto formatado além dos resultados dos comandos R presentes no documento.
+
+Uma documentação completa pode ser encontrada na WEB. Por exemplo, no endereço abaixo podemos ver a documentação sobre o atributo `output`  do R-Markdown com valor `github_document`. 
+
+[http://rmarkdown.rstudio.com/github_document_format.html](http://rmarkdown.rstudio.com/github_document_format.html)
+
+```{r cars}
+summary(cars)
+```
+
+## Incluindo gráficos
+
+Você pode incluir gráficos como no exemplo abaixo:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Observe o parâmetro `echo = FALSE` que previne da impressão (na saida) da linha de comando R que gerou o gráfico.
+
+## Uma seção de exemplo no R
+
+Antes de começar vamos listar algumas URL úteis:
+
+* Stack Exchange para métodos numéricos em Estatística [http://stats.stackexchange.com/questions/tagged/r](http://stats.stackexchange.com/questions/tagged/r)
+
+
+Operador atribuição
+
+```{r, echo=TRUE}
+x <- 3.1416
+print(x)
+x
+```
+
+O `[1]` indica que `x` é um vetor e que `3.1416` é seu valor.
+
+Outro exemplo:
+
+```{r, echo=TRUE}
+msg <- "alô mundo !"
+```
+
+Podemos comentar o código R
+
+```{r, echo=TRUE}
+# aqui entra comentário.
+```
+
+Podemos solicitar Help de um comando. Nesta caso uma pagina HTML será renderizada no painel Help (Normalmente embaixo à direita).
+
+Suponha que desejemos usar o pacote `arules` e nem saibamos por onde começar. Podemos começar assim:
+
+```{r, echo=TRUE}
+help("install.packages")
+```
+
+Então podemos instalar o pacote assim:
+
+```{r, echo=TRUE}
+# Execute install.packages("arules")
+```
+
+Após a instalação podemos usá-lo
+
+```{r, echo=TRUE}
+library("arules")
+```
+
+Que tal verificar como funciona a funcão que lida com DataSetes
+
+```{r, echo=TRUE}
+help("data")
+```
+
+Podemos listar todos os datasets instalados
+
+```{r, echo=TRUE}
+data()
+```
+
+
+Ou podemos listar os datasets instalados apenas com o `arules` 
+
+```{r, echo=TRUE}
+try(data(package = "arules") )
+```
+
+OK, então podemos usar um dos datasets listados
+```{r, echo=TRUE}
+ds <- c("Adult")
+data(list = ds)
+```
+
+Agora podemos inspecionar o dataset Adult verificando sua dimensão (linhas e colunas)
+
+```{r, echo=TRUE}
+dim(Adult)
+```
+
+Ou podemos inspecionar o dataset Adult vendo todo o resumo
+
+```{r, echo=TRUE}
+summary(Adult)
+```
+
+Observe acima as métricas e resumos estatísticos sobre este dataset
+
+```
+48842 linhas
+  115 colunas
+...
+ítens mais frequentes (valores discretos e seu quantitativo de ocorrências), etc.
+``` 
+
+Podemos executar uma função `eclat` sobre o dataset
+
+```{r, echo=TRUE}
+e <- eclat(Adult)
+```
+
+E ver o resumo
+
+```{r, echo=TRUE}
+summary(e)
+```
+
+Ou inspecionar os detalhes
+
+```{r, echo=TRUE, eval=FALSE}
+inspect(e)
+```
+
+Nesta inspeção vemos que a saida é muito grande e praticamente inutil para uma sessão interativa. Então vamos pegar apenas os _top five_ considerando o atributo `support`
+
+```{r, echo=TRUE}
+s <- sort(e)
+```
+
+```{r, echo=TRUE}
+p <- s[1:5]
+inspect(p)
+```
+
+
+Que tal integrar com o  [https://www.shinyapps.io](https://www.shinyapps.io) ?
+
+Fácil ! Instale o pacote `rsconnect`
+
+```{r, echo=TRUE}
+# Execute install.packages("rsconnect")
+```
+
+Crie uma conta tipo **Free** usando seu e-mail preferido e entre no Dashboard [https://www.shinyapps.io/admin/#/dashboard](https://www.shinyapps.io/admin/#/dashboard)
+
+
+```{r, echo=TRUE}
+# Execute install.packages("webshot")
+#
+# Read R file with token and secret 
+source("../token_and_secret.R")
+rsconnect::setAccountInfo(
+        name='joao-parana',
+			  token=token,
+			  secret=secret)
+```
+
+**OBS:** _Crie sua propria conta e atualize a sua **secret**_
+
+Veja o texto abaixo retirado da página e Ajuda do RStudio.
+
+**Using your R packages in the cloud**
+
+In order to run your applications on shinyapps.io, the service needs to replicate the environment from your local machine. shinyapps.io is built using **Ubuntu Linux** as the base operating system, and is likely to be different from most users’ systems.
+
+
+
+
+
+```{r, echo=TRUE}
+library(shiny)
+server = function(input, output) {
+  output$distPlot <- renderPlot({
+    # generate bins based on input$bins from ui.R
+    x    <- faithful[, 2]
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    # draw the histogram with the specified number of bins
+    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+  })
+}
+
+ui <- shinyUI(fluidPage(
+
+  # Application title
+  titlePanel("Old Faithful Geyser Data"),
+  # Sidebar with a slider input for number of bins
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("bins",
+                  "Number of bins:",
+                  min = 1,
+                  max = 50,
+                  value = 30)
+    ),
+    # Show a plot of the generated distribution
+    mainPanel(
+      plotOutput("distPlot")
+    )
+  )
+))
+
+shinyApp(ui = ui, server = server)
+```
+
+
+
+```{r, echo=TRUE}
+# getwd()
+# library(rsconnect)
+# rsconnect::deployApp('/Users/admin/Desktop/Development/yarn-cefet/R-studio-sessions/shinyApp')
+```
+
+
+
+```{r, echo=TRUE}
+
+```
+
+
+
+
+```{r, echo=TRUE}
+
+```
+
