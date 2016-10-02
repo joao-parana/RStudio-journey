@@ -43,7 +43,7 @@ Antes de começar vamos listar algumas URL úteis:
 * Stack Exchange para métodos numéricos em Estatística [http://stats.stackexchange.com/questions/tagged/r](http://stats.stackexchange.com/questions/tagged/r)
 
 
-Operador atribuição
+### Operador atribuição
 
 ```{r, echo=TRUE}
 x <- 3.1416
@@ -59,11 +59,15 @@ Outro exemplo:
 msg <- "alô mundo !"
 ```
 
+### Comentários em R
+
 Podemos comentar o código R
 
 ```{r, echo=TRUE}
 # aqui entra comentário.
 ```
+
+### Solicitando Ajuda
 
 Podemos solicitar Help de um comando. Nesta caso uma pagina HTML será renderizada no painel Help (Normalmente embaixo à direita).
 
@@ -73,11 +77,15 @@ Suponha que desejemos usar o pacote `arules` e nem saibamos por onde começar. P
 help("install.packages")
 ```
 
+### Instalando um Pacote
+
 Então podemos instalar o pacote assim:
 
 ```{r, echo=TRUE}
 # Execute install.packages("arules")
 ```
+
+### Usando um pacote
 
 Após a instalação podemos usá-lo
 
@@ -90,6 +98,8 @@ Que tal verificar como funciona a funcão que lida com DataSetes
 ```{r, echo=TRUE}
 help("data")
 ```
+
+###  Listando DataSets instalados
 
 Podemos listar todos os datasets instalados
 
@@ -104,6 +114,8 @@ Ou podemos listar os datasets instalados apenas com o `arules`
 try(data(package = "arules") )
 ```
 
+### Usando um DataSet em particular
+
 OK, então podemos usar um dos datasets listados
 ```{r, echo=TRUE}
 ds <- c("Adult")
@@ -115,6 +127,8 @@ Agora podemos inspecionar o dataset Adult verificando sua dimensão (linhas e co
 ```{r, echo=TRUE}
 dim(Adult)
 ```
+
+### Inspecionando um DataSet
 
 Ou podemos inspecionar o dataset Adult vendo todo o resumo
 
@@ -160,8 +174,66 @@ p <- s[1:5]
 inspect(p)
 ```
 
+### Sequência de Inteiros
 
-Que tal integrar com o  [https://www.shinyapps.io](https://www.shinyapps.io) ?
+```{r, echo=TRUE, eval=TRUE}
+x <- 3:27
+y <- 1:10
+```
+
+### Objetos
+
+Tipos básicos (atômicos)
+
+* character
+* numeric
+* integer
+* complex
+* logical
+
+vector é um Basic Object 
+
+vector e list podem conter objetos dentro deles.
+
+Use a função vector() para criar vetores.
+
+O Objeto Number pode assumir os valores Inf e NaN 
+
+Objetos podem ter atributos
+
+Ex: names, dimnames, class, length e outros atributos definidos pelo usuário. 
+
+```{r, echo=TRUE, eval=TRUE}
+
+```
+
+### Vetores
+
+```{r, echo=TRUE, eval=TRUE}
+x <- c(0.5, 0.6)
+x
+y <- c(3.1416, "pi") # coersão de tipo
+y
+z <- c(TRUE, 2.3)    # coersão de tipo
+z
+a <- 0:6
+a
+class(a)
+as.numeric(a)
+as.logical(a)
+as.complex(a)
+```
+
+### Listas
+
+```{r, echo=TRUE, eval=TRUE}
+
+```
+
+
+## Aplicação WEB com R
+
+Que tal integrar com o [https://www.shinyapps.io](https://www.shinyapps.io) ?
 
 Fácil ! Instale o pacote `rsconnect`
 
@@ -177,13 +249,14 @@ Crie uma conta tipo **Free** usando seu e-mail preferido e entre no Dashboard [h
 #
 # Read R file with token and secret 
 source("../token_and_secret.R")
+library(rsconnect)
 rsconnect::setAccountInfo(
         name='joao-parana',
 			  token=token,
 			  secret=secret)
 ```
 
-**OBS:** _Crie sua propria conta e atualize a sua **secret**_
+**OBS:** _Crie sua propria conta e atualize seus dados de credenciais: **name**, **token** e **secret**_
 
 Veja o texto abaixo retirado da página e Ajuda do RStudio.
 
@@ -227,15 +300,14 @@ ui <- shinyUI(fluidPage(
   )
 ))
 
-shinyApp(ui = ui, server = server)
+# shinyApp(ui = ui, server = server)
 ```
 
 
 
 ```{r, echo=TRUE}
-# getwd()
-# library(rsconnect)
-# rsconnect::deployApp('/Users/admin/Desktop/Development/yarn-cefet/R-studio-sessions/shinyApp')
+getwd()
+# rsconnect::deployApp('/Users/admin/Desktop/Development/RStudio-journey/shinyApp')
 ```
 
 

@@ -6,6 +6,19 @@ João Antonio Ferreira
 -   [R Markdown](#r-markdown)
 -   [Incluindo gráficos](#incluindo-graficos)
 -   [Uma seção de exemplo no R](#uma-secao-de-exemplo-no-r)
+    -   [Operador atribuição](#operador-atribuicao)
+    -   [Comentários em R](#comentarios-em-r)
+    -   [Solicitando Ajuda](#solicitando-ajuda)
+    -   [Instalando um Pacote](#instalando-um-pacote)
+    -   [Usando um pacote](#usando-um-pacote)
+    -   [Listando DataSets instalados](#listando-datasets-instalados)
+    -   [Usando um DataSet em particular](#usando-um-dataset-em-particular)
+    -   [Inspecionando um DataSet](#inspecionando-um-dataset)
+    -   [Sequência de Inteiros](#sequencia-de-inteiros)
+    -   [Objetos](#objetos)
+    -   [Vetores](#vetores)
+    -   [Listas](#listas)
+-   [Aplicação WEB com R](#aplicacao-web-com-r)
 
 R Markdown
 ----------
@@ -46,7 +59,7 @@ Antes de começar vamos listar algumas URL úteis:
 
 -   Stack Exchange para métodos numéricos em Estatística <http://stats.stackexchange.com/questions/tagged/r>
 
-Operador atribuição
+### Operador atribuição
 
 ``` r
 x <- 3.1416
@@ -69,11 +82,15 @@ Outro exemplo:
 msg <- "alô mundo !"
 ```
 
+### Comentários em R
+
 Podemos comentar o código R
 
 ``` r
 # aqui entra comentário.
 ```
+
+### Solicitando Ajuda
 
 Podemos solicitar Help de um comando. Nesta caso uma pagina HTML será renderizada no painel Help (Normalmente embaixo à direita).
 
@@ -83,11 +100,15 @@ Suponha que desejemos usar o pacote `arules` e nem saibamos por onde começar. P
 help("install.packages")
 ```
 
+### Instalando um Pacote
+
 Então podemos instalar o pacote assim:
 
 ``` r
 # Execute install.packages("arules")
 ```
+
+### Usando um pacote
 
 Após a instalação podemos usá-lo
 
@@ -110,6 +131,8 @@ Que tal verificar como funciona a funcão que lida com DataSetes
 help("data")
 ```
 
+### Listando DataSets instalados
+
 Podemos listar todos os datasets instalados
 
 ``` r
@@ -121,6 +144,8 @@ Ou podemos listar os datasets instalados apenas com o `arules`
 ``` r
 try(data(package = "arules") )
 ```
+
+### Usando um DataSet em particular
 
 OK, então podemos usar um dos datasets listados
 
@@ -136,6 +161,8 @@ dim(Adult)
 ```
 
     ## [1] 48842   115
+
+### Inspecionando um DataSet
 
 Ou podemos inspecionar o dataset Adult vendo todo o resumo
 
@@ -269,6 +296,94 @@ inspect(p)
     ## 2585 {capital-gain=None,capital-loss=None} 0.8706646
     ## 2589 {race=White}                          0.8550428
 
+### Sequência de Inteiros
+
+``` r
+x <- 3:27
+y <- 1:10
+```
+
+### Objetos
+
+Tipos básicos (atômicos)
+
+-   character
+-   numeric
+-   integer
+-   complex
+-   logical
+
+vector é um Basic Object
+
+vector e list podem conter objetos dentro deles.
+
+Use a função vector() para criar vetores.
+
+O Objeto Number pode assumir os valores Inf e NaN
+
+Objetos podem ter atributos
+
+Ex: names, dimnames, class, length e outros atributos definidos pelo usuário.
+
+### Vetores
+
+``` r
+x <- c(0.5, 0.6)
+x
+```
+
+    ## [1] 0.5 0.6
+
+``` r
+y <- c(3.1416, "pi") # coersão de tipo
+y
+```
+
+    ## [1] "3.1416" "pi"
+
+``` r
+z <- c(TRUE, 2.3)    # coersão de tipo
+z
+```
+
+    ## [1] 1.0 2.3
+
+``` r
+a <- 0:6
+a
+```
+
+    ## [1] 0 1 2 3 4 5 6
+
+``` r
+class(a)
+```
+
+    ## [1] "integer"
+
+``` r
+as.numeric(a)
+```
+
+    ## [1] 0 1 2 3 4 5 6
+
+``` r
+as.logical(a)
+```
+
+    ## [1] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+
+``` r
+as.complex(a)
+```
+
+    ## [1] 0+0i 1+0i 2+0i 3+0i 4+0i 5+0i 6+0i
+
+### Listas
+
+Aplicação WEB com R
+-------------------
+
 Que tal integrar com o <https://www.shinyapps.io> ?
 
 Fácil ! Instale o pacote `rsconnect`
@@ -280,15 +395,18 @@ Fácil ! Instale o pacote `rsconnect`
 Crie uma conta tipo **Free** usando seu e-mail preferido e entre no Dashboard <https://www.shinyapps.io/admin/#/dashboard>
 
 ``` r
+# Execute install.packages("webshot")
+#
 # Read R file with token and secret 
 source("../token_and_secret.R")
+library(rsconnect)
 rsconnect::setAccountInfo(
         name='joao-parana',
               token=token,
               secret=secret)
 ```
 
-**OBS:** *Crie sua propria conta e atualize a sua **secret***
+**OBS:** *Crie sua propria conta e atualize seus dados de credenciais: **name**, **token** e **secret***
 
 Veja o texto abaixo retirado da página e Ajuda do RStudio.
 
@@ -298,6 +416,16 @@ In order to run your applications on shinyapps.io, the service needs to replicat
 
 ``` r
 library(shiny)
+```
+
+    ## 
+    ## Attaching package: 'shiny'
+
+    ## The following object is masked from 'package:rsconnect':
+    ## 
+    ##     serverInfo
+
+``` r
 server = function(input, output) {
   output$distPlot <- renderPlot({
     # generate bins based on input$bins from ui.R
@@ -332,7 +460,11 @@ ui <- shinyUI(fluidPage(
 ```
 
 ``` r
-# getwd()
-# library(rsconnect)
-# rsconnect::deployApp('/Users/admin/Desktop/Development/yarn-cefet/R-studio-sessions/shinyApp')
+getwd()
+```
+
+    ## [1] "/Users/admin/Desktop/Development/RStudio-journey/first"
+
+``` r
+# rsconnect::deployApp('/Users/admin/Desktop/Development/RStudio-journey/shinyApp')
 ```
