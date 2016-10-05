@@ -613,6 +613,9 @@ rsconnect::setAccountInfo(
 
 **OBS:** _Crie sua propria conta e atualize seus dados de credenciais: **name**, **token** e **secret**_
 
+Um tutorial sobre Shiny pode ser visto em : 
+[http://shiny.rstudio.com/tutorial/](http://shiny.rstudio.com/tutorial)
+
 Veja o texto abaixo retirado da página e Ajuda do RStudio.
 
 **Using your R packages in the cloud**
