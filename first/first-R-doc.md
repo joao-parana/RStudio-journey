@@ -317,7 +317,7 @@ e <- eclat(Adult)
     ## Absolute minimum support count: 4884 
     ## 
     ## create itemset ... 
-    ## set transactions ...[115 item(s), 48842 transaction(s)] done [0.03s].
+    ## set transactions ...[115 item(s), 48842 transaction(s)] done [0.04s].
     ## sorting and recoding items ... [31 item(s)] done [0.01s].
     ## creating bit matrix ... [31 row(s), 48842 column(s)] done [0.01s].
     ## writing  ... [2616 set(s)] done [0.01s].
@@ -883,6 +883,8 @@ nodes <- data.frame(id = 1:10,
 edges <- data.frame(from = c(1,2,5,7,8,10), to = c(9,3,1,6,4,7))
 ```
 
+Awesome !
+
 ``` r
 # Execute o comando abaixo na Console do RStudio
 visNetwork(nodes, edges, height = "500px", width = "100%")
@@ -932,6 +934,8 @@ rsconnect::setAccountInfo(
 ```
 
 **OBS:** *Crie sua propria conta e atualize seus dados de credenciais: **name**, **token** e **secret***
+
+Um tutorial sobre Shiny pode ser visto em : [http://shiny.rstudio.com/tutorial/](http://shiny.rstudio.com/tutorial)
 
 Veja o texto abaixo retirado da página e Ajuda do RStudio.
 

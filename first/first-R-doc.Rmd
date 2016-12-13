@@ -561,6 +561,8 @@ nodes <- data.frame(id = 1:10,
 edges <- data.frame(from = c(1,2,5,7,8,10), to = c(9,3,1,6,4,7))
 ```
 
+Awesome !
+
 ```{r, echo=TRUE, eval=FALSE}
 # Execute o comando abaixo na Console do RStudio
 visNetwork(nodes, edges, height = "500px", width = "100%")
@@ -613,8 +615,7 @@ rsconnect::setAccountInfo(
 
 **OBS:** _Crie sua propria conta e atualize seus dados de credenciais: **name**, **token** e **secret**_
 
-Um tutorial sobre Shiny pode ser visto em : 
-[http://shiny.rstudio.com/tutorial/](http://shiny.rstudio.com/tutorial)
+Um tutorial sobre Shiny pode ser visto em :  [http://shiny.rstudio.com/tutorial/](http://shiny.rstudio.com/tutorial)
 
 Veja o texto abaixo retirado da página e Ajuda do RStudio.
 
