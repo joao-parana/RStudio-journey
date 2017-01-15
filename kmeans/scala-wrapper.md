@@ -202,7 +202,7 @@ val goodRecQty = prepared.count
 Ao final renomeie o arquivo gerado para `/data/prepared-3D_spatial_network.csv`.
 
 ``` bash
-mv /data/large-output-prepared/*.csv /data/prepared-3D_spatial_network.csv
+mv /data/large-output-prepared/part*.csv /data/prepared-3D_spatial_network.csv
 ```
 
 Preparação do ambiente R
@@ -247,28 +247,27 @@ cl_factor = factor(cl$cluster)
 cl
 ```
 
-    ## K-means clustering with 8 clusters of sizes 100132, 164942, 49380, 128806, 128008, 59290, 62666, 176534
+    ## K-means clustering with 8 clusters of sizes 84160, 89588, 115284, 84138, 110696, 149062, 109200, 127630
     ## 
     ## Cluster means:
     ##       [,1]      [,2]
-    ## 1 56.75292  9.953103
-    ## 2 57.44726 10.487294
-    ## 3 56.71563  8.953861
-    ## 4 57.38660  9.870016
-    ## 5 56.90462  9.411837
-    ## 6 56.82352  8.435228
-    ## 7 56.99326  8.773218
-    ## 8 57.06320 10.025053
+    ## 1 56.85341  8.898971
+    ## 2 56.74403  9.995484
+    ## 3 57.30581 10.249920
+    ## 4 56.87225  8.498051
+    ## 5 57.47020 10.581183
+    ## 6 57.02992  9.915375
+    ## 7 57.38976  9.834739
+    ## 8 56.87885  9.402266
     ## 
     ## Clustering vector:
-    ##  [1] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 7 7 7 7 7 7 7 7 7 7 7 7 6 6 6 6
-    ## [36] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+    ##  [1] 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+    ## [36] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
     ##  [ reached getOption("max.print") -- omitted 869708 entries ]
     ## 
     ## Within cluster sum of squares by cluster:
-    ## [1]  4049.618 11950.849  1211.478  5476.355  6394.986  1767.351  1791.153
-    ## [8]  5642.107
-    ##  (between_SS / total_SS =  90.8 %)
+    ## [1] 3652.937 3346.971 4171.647 3278.523 7612.229 2446.854 4058.817 6297.011
+    ##  (between_SS / total_SS =  91.6 %)
     ## 
     ## Available components:
     ## 

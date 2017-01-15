@@ -204,7 +204,7 @@ val goodRecQty = prepared.count
 Ao final renomeie o arquivo gerado para `/data/prepared-3D_spatial_network.csv`.
 
 ```bash
-mv /data/large-output-prepared/*.csv /data/prepared-3D_spatial_network.csv
+mv /data/large-output-prepared/part*.csv /data/prepared-3D_spatial_network.csv
 ``` 
 
 ## Preparação do ambiente R
