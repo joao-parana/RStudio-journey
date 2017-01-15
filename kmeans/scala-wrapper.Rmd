@@ -15,7 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-Este é um documento R Markdown. Markdown é um formato simples para gerar documentos HTML, DOCX e PDF.
+Este é um documento R Markdown. Markdown é um formato simples para gerar documentos HTML, DOCX e PDF. 
+
+R Markdown é uma extensão para Markdown que acrescenta funcionalidade de execução de código R gerando saida Markdown que pode ser lida no Github. 
 
 ## Gerando um Dataset no formato desejado
 
@@ -209,44 +211,14 @@ if (Files.exists(Paths.get(outputDir))) {
   deleteRecursively(new File(outputDir))
 }
 prepared.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
-val goorRecQty = prepared.count
-
-// Create a new VectorAssembler object called assembler for the feature
-// columns as the input. Set the output column to be called features
-
-val assembler = new VectorAssembler().
-      setInputCols(Array("latitude", "longitude")).
-      setOutputCol("features")
-
-// Use the assembler object to transform the feature_data
-// Call this new data training_data
-val training_data = assembler.transform(prepared).select("features")
-training_data.schema
-
-val inicio = new java.util.Date()
-
-val kmeans = new KMeans().setK(8).setSeed(314L).setMaxIter(30)
-
-// Fit that model to the training_data
-// O processo de fit demora mais de dois minutos para 900.000 registros.
-val model = kmeans.fit(training_data)
-println("Duração: " + new java.util.Date() + " - " + inicio)
-
-// Evaluate clustering by computing Within Set Sum of Squared Errors.
-val WSSSE = model.computeCost(training_data)
-println(s"Within Set Sum of Squared Errors = $WSSSE")
-
-// Shows the result.
-println("Cluster Centers: ")
-import scala.math.Ordering
-// model.clusterCenters.sorted(Ordering[Double]).foreach(println)
-val clustersId = model.summary.predictions.select(s"prediction").distinct().sort("prediction")
-clustersId.show
-val predictions = model.summary.predictions.sort("prediction")
-predictions.show
-model.clusterCenters.foreach(println)
-// Falta determinar quais centros são de quais clusters para correlacionar os centros com as predictions
+val goodRecQty = prepared.count
 ```
+
+Ao final renomeie o arquivo gerado para `/data/prepared-3D_spatial_network.csv`.
+
+```bash
+mv /data/large-output-prepared/*.csv /data/prepared-3D_spatial_network.csv
+``` 
 
 ## Preparação do ambiente R
 
@@ -297,4 +269,44 @@ qplot(V2, V1, data = centers)
 ```
 
 
-### Código equivalente em Scala
+### Código KMeans equivalente em Scala
+
+```scala
+// Create a new VectorAssembler object called assembler for the feature
+// columns as the input. Set the output column to be called features
+
+val assembler = new VectorAssembler().
+      setInputCols(Array("latitude", "longitude")).
+      setOutputCol("features")
+
+// Use the assembler object to transform the feature_data
+// Call this new data training_data
+val training_data = assembler.transform(prepared).select("features")
+training_data.schema
+
+val inicio = new java.util.Date()
+
+val kmeans = new KMeans().setK(8).setSeed(314L).setMaxIter(30)
+
+// Fit that model to the training_data
+// O processo de fit demora mais de dois minutos para 900.000 registros.
+val model = kmeans.fit(training_data)
+println("Duração: " + new java.util.Date() + " - " + inicio)
+
+// Evaluate clustering by computing Within Set Sum of Squared Errors.
+val WSSSE = model.computeCost(training_data)
+println(s"Within Set Sum of Squared Errors = $WSSSE")
+
+// Shows the result.
+println("Cluster Centers: ")
+import scala.math.Ordering
+// model.clusterCenters.sorted(Ordering[Double]).foreach(println)
+val clustersId = model.summary.predictions.select(s"prediction").distinct().sort("prediction")
+clustersId.show
+val predictions = model.summary.predictions.sort("prediction")
+predictions.show
+model.clusterCenters.foreach(println)
+// Falta determinar quais centros são de quais clusters para correlacionar os centros com as predictions
+```
+
+

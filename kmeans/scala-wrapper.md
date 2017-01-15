@@ -4,18 +4,222 @@ João Antonio Ferreira
 15 de janeiro de 2017
 
 -   [R Markdown](#r-markdown)
--   [Preparação do ambiente](#preparacao-do-ambiente)
+-   [Gerando um Dataset no formato desejado](#gerando-um-dataset-no-formato-desejado)
+-   [Preparação do ambiente R](#preparacao-do-ambiente-r)
     -   [Lendo o Dataset](#lendo-o-dataset)
     -   [Investigando no grafico](#investigando-no-grafico)
     -   [Rodando o KMeans para k = 8](#rodando-o-kmeans-para-k-8)
+    -   [Código KMeans equivalente em Scala](#codigo-kmeans-equivalente-em-scala)
 
 R Markdown
 ----------
 
 Este é um documento R Markdown. Markdown é um formato simples para gerar documentos HTML, DOCX e PDF.
 
-Preparação do ambiente
-----------------------
+R Markdown é uma extensão para Markdown que acrescenta funcionalidade de execução de código R gerando saida Markdown que pode ser lida no Github.
+
+Gerando um Dataset no formato desejado
+--------------------------------------
+
+Inicialmente configuro o Environment para usar o spark-shell
+
+``` bash
+export  SPARK_MASTER_IP=127.0.0.1
+export  SPARK_LOCAL_IP=127.0.0.1
+spark-shell
+```
+
+Partindo do dataset original vamos inserir 130.299 registros com pelo menos um atributo null e gerar mais registros usando operação map do Dataset do Spark. O Dataset original é 3D\_spatial\_network.csv
+
+Fazendo os imports necessários.
+
+``` scala
+import collection.JavaConversions._
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.Arrays
+import org.apache.spark.ml.clustering.KMeans
+import org.apache.spark.ml.feature.{VectorAssembler,StringIndexer,VectorIndexer,OneHotEncoder}
+import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Encoder
+import org.apache.spark.sql.Encoders
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.types.StructType
+import spark.implicits._
+```
+
+``` scala
+// utility function
+def deleteRecursively(file: File): Unit = {
+  if (file.isDirectory) {
+    file.listFiles.foreach(deleteRecursively)
+  }
+  if (file.exists && !file.delete)
+    throw new Exception(s"Unable to delete ${file.getAbsolutePath}")
+}
+
+val sparkSession = SparkSession.builder.
+    appName("spark session example").
+    getOrCreate()
+
+val df = sparkSession.read.
+          option("header","true").
+          option("inferSchema","true").
+          csv("3D_spatial_network.csv")
+
+val sortedSet = df.sort("id", "latitude", "longitude", "altitude").collect()
+// sortedSet é um Array[org.apache.spark.sql.Row]
+
+val cachedDF = df.cache()
+
+val fullRDD = sparkSession.sparkContext.parallelize(sortedSet)
+
+val dfSchema = df.schema
+
+// Criando classe para o Pattern ValueObject.
+// No caso dos parametros puderem ser nulos usamos Option[Tipo]
+case class RoadNet(id: Option[Integer], longitude: Option[Double],
+                   latitude: Option[Double], altitude: Option[Double])
+
+df.count()
+// res2: Long = 434874
+
+val fullDataframe = sparkSession.createDataFrame(fullRDD, dfSchema)
+val Array(pf1, pf2) = fullDataframe.randomSplit(Array(0.70, 0.30))
+pf2.count
+// res3: Long = 130299
+
+def returnDatasetWhichAllTuplesContainsOneAttributeNull(dsInput: Dataset[Row]) : Dataset[RoadNet] = {
+  val allTuplesContainsNull = pf2.map(row => {
+    val r = scala.util.Random
+    val index = r.nextInt(4)
+    def nullOneValue(i: Int): RoadNet = i match {
+      case 0 => RoadNet(None,
+          Option(row(1).asInstanceOf[Double]),
+          Option(row(2).asInstanceOf[Double]),
+          Option(row(3).asInstanceOf[Double])
+      )
+      case 1 => RoadNet(Option(row(0).asInstanceOf[Integer]),
+          None,
+          Option(row(2).asInstanceOf[Double]),
+          Option(row(3).asInstanceOf[Double])
+      )
+      case 2 => RoadNet(Option(row(0).asInstanceOf[Integer]),
+          Option(row(1).asInstanceOf[Double]),
+          None,
+          Option(row(3).asInstanceOf[Double])
+      )
+      case _ => RoadNet(Option(row(0).asInstanceOf[Integer]),
+          Option(row(1).asInstanceOf[Double]),
+          Option(row(2).asInstanceOf[Double]),
+          None
+      )
+    }
+    nullOneValue(index)
+  })
+  allTuplesContainsNull
+  // allTuplesContainsNull: org.apache.spark.sql.Dataset[RoadNet] = [id: int, longitude: double, latitude: double, altitude: double]
+}
+
+val dataSetWhichAllTuplesContainsNull = returnDatasetWhichAllTuplesContainsOneAttributeNull(pf2)
+dataSetWhichAllTuplesContainsNull.show
+dataSetWhichAllTuplesContainsNull.count()
+// Long = 130245
+
+val dfSchema = df.schema
+val Array(ps1, ps2) = smallDataframe.randomSplit(Array(0.80, 0.20))
+
+val myList: java.util.List[String] = Arrays.asList("hello", "world")
+val namesColl: java.util.Collection[String] = myList.toSeq
+sparkSession.sparkContext.parallelize(myList)
+val outputDir = "output"
+if (Files.exists(Paths.get(outputDir))) {
+  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
+  deleteRecursively(new File(outputDir))
+}
+myUnion.toJavaRDD.saveAsTextFile(outputDir)
+// Gerando vários um único arquivo CSV no diretório /data/output-coalesce
+val outputDir = "/data/output-coalesce"
+if (Files.exists(Paths.get(outputDir))) {
+  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
+  deleteRecursively(new File(outputDir))
+}
+myUnion.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
+// Aumentando o tamanho da saida
+
+def returnDatasetWhichRadomNoise(dsInput: Dataset[Row]) : Dataset[RoadNet] = {
+  val datasetWithNoise = dsInput.map(row => {
+    val r = scala.util.Random
+    val index = r.nextInt(99)
+    val signal: Int = if (index % 2 == 0) -1 else 1
+    var noise = signal * index * 1E-15
+    var drive = index % 3
+    def addNoise(i: Int): RoadNet = i match {
+      case 0 => RoadNet(
+          Option(row(0).asInstanceOf[Integer]),
+          Option(row(1).asInstanceOf[Double] + noise),
+          Option(row(2).asInstanceOf[Double]),
+          Option(row(3).asInstanceOf[Double])
+      )
+      case 1 => RoadNet(
+          Option(row(0).asInstanceOf[Integer]),
+          Option(row(1).asInstanceOf[Double]),
+          Option(row(2).asInstanceOf[Double] + noise),
+          Option(row(3).asInstanceOf[Double])
+      )
+      case 2 => RoadNet(
+          Option(row(0).asInstanceOf[Integer]),
+          Option(row(1).asInstanceOf[Double]),
+          Option(row(2).asInstanceOf[Double]),
+          Option(row(3).asInstanceOf[Double] + noise)
+      )
+    }
+    val ret = addNoise(drive)
+    ret
+  })
+  datasetWithNoise
+}
+
+returnDatasetWhichRadomNoise(smallDataframe).show()
+
+val outputDir = "/data/large-output-coalesce"
+if (Files.exists(Paths.get(outputDir))) {
+  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
+  deleteRecursively(new File(outputDir))
+}
+
+val originalWithNoise = returnDatasetWhichRadomNoise(cachedDF)
+val finalUnion = myUnion.union(originalWithNoise.as[RoadNet])
+
+finalUnion.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
+val recQty = finalUnion.count
+
+println(s"Fazendo o Tidy de $recQty registros")
+val prepared = finalUnion.na.drop()
+val prepQty = prepared.count()
+println(s"Sobraram $prepQty registros para o KMeans")
+
+val outputDir = "/data/large-output-prepared"
+if (Files.exists(Paths.get(outputDir))) {
+  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
+  deleteRecursively(new File(outputDir))
+}
+prepared.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
+val goodRecQty = prepared.count
+```
+
+Ao final renomeie o arquivo gerado para `/data/prepared-3D_spatial_network.csv`.
+
+``` bash
+mv /data/large-output-prepared/*.csv /data/prepared-3D_spatial_network.csv
+```
+
+Preparação do ambiente R
+------------------------
 
 Preparando o ambiente para rodar o KMeans da implementação R com o mesmo dataset da implementação Spark
 
@@ -56,27 +260,27 @@ cl_factor = factor(cl$cluster)
 cl
 ```
 
-    ## K-means clustering with 8 clusters of sizes 84660, 90422, 86264, 127728, 88248, 141874, 78036, 172526
+    ## K-means clustering with 8 clusters of sizes 122278, 136736, 89258, 81062, 88908, 69596, 196912, 85008
     ## 
     ## Cluster means:
     ##       [,1]      [,2]
-    ## 1 56.87691  8.499683
-    ## 2 56.94205  9.308417
-    ## 3 56.76062  9.690166
-    ## 4 57.44926 10.555215
-    ## 5 56.85911 10.146987
-    ## 6 57.41014 10.093987
-    ## 7 56.82915  8.885834
-    ## 8 57.11217  9.842111
+    ## 1 57.45257 10.564718
+    ## 2 57.39898 10.131487
+    ## 3 56.93032  9.287195
+    ## 4 57.27323  9.720362
+    ## 5 56.85422  8.840570
+    ## 6 56.85808  8.460687
+    ## 7 56.94744 10.021957
+    ## 8 56.76721  9.669532
     ## 
     ## Clustering vector:
-    ##  [1] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-    ## [36] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+    ##  [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+    ## [36] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
     ##  [ reached getOption("max.print") -- omitted 869708 entries ]
     ## 
     ## Within cluster sum of squares by cluster:
-    ## [1] 3356.690 3502.066 2718.040 8757.847 3296.953 5482.231 2908.934 5640.036
-    ##  (between_SS / total_SS =  91.4 %)
+    ## [1] 8383.846 4989.938 3463.816 2169.264 3457.832 2444.448 7633.675 2705.772
+    ##  (between_SS / total_SS =  91.5 %)
     ## 
     ## Available components:
     ## 
@@ -93,3 +297,43 @@ qplot(V2, V1, data = centers)
 ```
 
 ![](scala-wrapper_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+### Código KMeans equivalente em Scala
+
+``` scala
+// Create a new VectorAssembler object called assembler for the feature
+// columns as the input. Set the output column to be called features
+
+val assembler = new VectorAssembler().
+      setInputCols(Array("latitude", "longitude")).
+      setOutputCol("features")
+
+// Use the assembler object to transform the feature_data
+// Call this new data training_data
+val training_data = assembler.transform(prepared).select("features")
+training_data.schema
+
+val inicio = new java.util.Date()
+
+val kmeans = new KMeans().setK(8).setSeed(314L).setMaxIter(30)
+
+// Fit that model to the training_data
+// O processo de fit demora mais de dois minutos para 900.000 registros.
+val model = kmeans.fit(training_data)
+println("Duração: " + new java.util.Date() + " - " + inicio)
+
+// Evaluate clustering by computing Within Set Sum of Squared Errors.
+val WSSSE = model.computeCost(training_data)
+println(s"Within Set Sum of Squared Errors = $WSSSE")
+
+// Shows the result.
+println("Cluster Centers: ")
+import scala.math.Ordering
+// model.clusterCenters.sorted(Ordering[Double]).foreach(println)
+val clustersId = model.summary.predictions.select(s"prediction").distinct().sort("prediction")
+clustersId.show
+val predictions = model.summary.predictions.sort("prediction")
+predictions.show
+model.clusterCenters.foreach(println)
+// Falta determinar quais centros são de quais clusters para correlacionar os centros com as predictions
+```
