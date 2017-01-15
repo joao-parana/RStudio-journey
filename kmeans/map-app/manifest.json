@@ -1,0 +1,7 @@
+{
+  "name": "map-app",
+  "short_name": "map-app",
+  "description": "Desenha um Mapa e coloca marcadores",
+  "start_url": "/",
+  "display": "standalone"
+}

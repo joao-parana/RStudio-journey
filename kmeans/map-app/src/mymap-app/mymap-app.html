@@ -1,0 +1,68 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-map.html">
+<link rel="import" href="../../bower_components/google-map-marker.html">
+<link rel="import" href="../../bower_components/google-map-poly.html">
+<link rel="import" href="../../bower_components/google-map-directions.html">
+<dom-module id="mymap-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>
+    <!-- google-map          latitude="56.7553199823865" longitude="9.844739463437099" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="56.7553199823865" longitude="9.844739463437099"
+                            title="56.7553199823865,            9.844739463437099" draggable="false" drag-events>
+        <img src="bolinha.png">
+      </google-map-marker>
+    </google-map -->
+    <google-map          latitude="56.94475450049082" longitude="10.011450686148232" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="56.94475450049082" longitude="10.011450686148232"
+                            title="56.94475450049082,            10.011450686148232" draggable="false" drag-events></google-map-marker>
+    </google-map>
+    <google-map          latitude="56.74087524874841" longitude="9.582880841078499" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="56.74087524874841" longitude="9.582880841078499"
+                            title="56.74087524874841,            9.582880841078499" draggable="false" drag-events></google-map-marker>
+    </google-map> 
+    <google-map          latitude="57.41689335486228" longitude="10.009328836752536" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="57.41689335486228" longitude="10.009328836752536"
+                            title="57.41689335486228,            10.009328836752536" draggable="false" drag-events></google-map-marker>
+    </google-map>
+    <google-map          latitude="56.87092786382778" longitude="8.562589230951302" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="56.87092786382778" longitude="8.562589230951302"
+                            title="56.87092786382778,            8.562589230951302" draggable="false" drag-events></google-map-marker>
+    </google-map>
+    <google-map          latitude="56.87101939575067" longitude="9.086677369637345" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="56.87101939575067" longitude="9.086677369637345"
+                            title="56.87101939575067,            9.086677369637345" draggable="false" drag-events></google-map-marker>
+    </google-map>
+    <google-map          latitude="57.17045473893622" longitude="9.590056302529636" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="57.17045473893622" longitude="9.590056302529636"
+                            title="57.17045473893622,            9.590056302529636" draggable="false" drag-events></google-map-marker>
+    </google-map>
+    <google-map          latitude="57.27896284489639" longitude="11.015994073622913" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="57.27896284489639" longitude="11.015994073622913"
+                            title="57.27896284489639,            11.015994073622913" draggable="false" drag-events></google-map-marker>
+    </google-map>
+    <google-map          latitude="57.44979207387094" longitude="10.417310567783787" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+      <google-map-marker latitude="57.44979207387094" longitude="10.417310567783787"
+                            title="57.44979207387094,            10.417310567783787" draggable="false" drag-events></google-map-marker>
+    </google-map>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'mymap-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'mymap-app',
+        },
+      },
+
+    });
+  </script>
+</dom-module>

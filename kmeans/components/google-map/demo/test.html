@@ -1,0 +1,102 @@
+<!doctype html>
+<!-- Copyright (c) 2015 Google Inc. All rights reserved. -->
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Google Map demo</title>
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="../google-map.html">
+  <link rel="import" href="../google-map-marker.html">
+  <link rel="import" href="../google-map-poly.html">
+  <link rel="import" href="../google-map-directions.html">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+    }
+    #controlsToggle {
+      position: absolute;
+      left: 10%;
+      bottom: 10%;
+    }
+  </style>
+</head>
+<body class="fullbleed">
+
+<template is="dom-bind">
+  <!-- google-map          latitude="56.7553199823865" longitude="9.844739463437099" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="56.7553199823865" longitude="9.844739463437099"
+                          title="56.7553199823865,            9.844739463437099" draggable="false" drag-events>
+      <img src="bolinha.png">
+    </google-map-marker>
+  </google-map -->
+  <google-map          latitude="56.94475450049082" longitude="10.011450686148232" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="56.94475450049082" longitude="10.011450686148232"
+                          title="56.94475450049082,            10.011450686148232" draggable="false" drag-events></google-map-marker>
+  </google-map>
+  <google-map          latitude="56.74087524874841" longitude="9.582880841078499" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="56.74087524874841" longitude="9.582880841078499"
+                          title="56.74087524874841,            9.582880841078499" draggable="false" drag-events></google-map-marker>
+  </google-map> 
+  <google-map          latitude="57.41689335486228" longitude="10.009328836752536" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="57.41689335486228" longitude="10.009328836752536"
+                          title="57.41689335486228,            10.009328836752536" draggable="false" drag-events></google-map-marker>
+  </google-map>
+  <google-map          latitude="56.87092786382778" longitude="8.562589230951302" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="56.87092786382778" longitude="8.562589230951302"
+                          title="56.87092786382778,            8.562589230951302" draggable="false" drag-events></google-map-marker>
+  </google-map>
+  <google-map          latitude="56.87101939575067" longitude="9.086677369637345" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="56.87101939575067" longitude="9.086677369637345"
+                          title="56.87101939575067,            9.086677369637345" draggable="false" drag-events></google-map-marker>
+  </google-map>
+  <google-map          latitude="57.17045473893622" longitude="9.590056302529636" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="57.17045473893622" longitude="9.590056302529636"
+                          title="57.17045473893622,            9.590056302529636" draggable="false" drag-events></google-map-marker>
+  </google-map>
+  <google-map          latitude="57.27896284489639" longitude="11.015994073622913" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="57.27896284489639" longitude="11.015994073622913"
+                          title="57.27896284489639,            11.015994073622913" draggable="false" drag-events></google-map-marker>
+  </google-map>
+  <google-map          latitude="57.44979207387094" longitude="10.417310567783787" min-zoom="9" max-zoom="11" language="en" api-key="[[apiKey]]">
+    <google-map-marker latitude="57.44979207387094" longitude="10.417310567783787"
+                          title="57.44979207387094,            10.417310567783787" draggable="false" drag-events></google-map-marker>
+  </google-map>
+</template>
+
+
+<button id="controlsToggle" onclick="toggleControls()">Toggle controls</button>
+
+<script>
+var t = document.querySelector('template');
+if (location.origin === 'https://user-content-dot-custom-elements.appspot.com') {
+  t.apiKey = 'AIzaSyD3E1D9b-Z7ekrT3tbhl_dy8DCXuIuDDRc'; // TODO: update to your own API Key!
+}
+
+document.addEventListener('dom-change', function(e) {
+  var gmap = document.querySelector('google-map');
+  var directions = document.querySelector('google-map-directions');
+
+  gmap.addEventListener('api-load', function(e) {
+    document.querySelector('google-map-directions').map = this.map;
+  });
+
+  function toggleControls() {
+    gmap.disableDefaultUi = !gmap.disableDefaultUi;
+  }
+
+  var marker = document.querySelector('google-map-marker');
+  var poly = document.querySelector('google-map-poly');
+  var point = document.querySelector('google-map-point');
+
+  marker.addEventListener('google-map-marker-dragend', function(e) {
+    var latLng = e.detail.latLng;
+    console.log('pin dropped', latLng.lat(), latLng.lng());
+    point.latitude = latLng.lat();
+    point.longitude = latLng.lng();
+    poly._buildPathFromPoints();
+  });
+});
+</script>
+</body>
+</html>
