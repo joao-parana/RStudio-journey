@@ -133,26 +133,12 @@ dataSetWhichAllTuplesContainsNull.count()
 // Long = 130245
 
 val dfSchema = df.schema
-val Array(ps1, ps2) = smallDataframe.randomSplit(Array(0.80, 0.20))
 
 val myList: java.util.List[String] = Arrays.asList("hello", "world")
 val namesColl: java.util.Collection[String] = myList.toSeq
 sparkSession.sparkContext.parallelize(myList)
-val outputDir = "output"
-if (Files.exists(Paths.get(outputDir))) {
-  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
-  deleteRecursively(new File(outputDir))
-}
-myUnion.toJavaRDD.saveAsTextFile(outputDir)
-// Gerando vários um único arquivo CSV no diretório /data/output-coalesce
-val outputDir = "/data/output-coalesce"
-if (Files.exists(Paths.get(outputDir))) {
-  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
-  deleteRecursively(new File(outputDir))
-}
-myUnion.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
-// Aumentando o tamanho da saida
 
+// Aumentando o tamanho da saida
 def returnDatasetWhichRadomNoise(dsInput: Dataset[Row]) : Dataset[RoadNet] = {
   val datasetWithNoise = dsInput.map(row => {
     val r = scala.util.Random
@@ -186,8 +172,6 @@ def returnDatasetWhichRadomNoise(dsInput: Dataset[Row]) : Dataset[RoadNet] = {
   datasetWithNoise
 }
 
-returnDatasetWhichRadomNoise(smallDataframe).show()
-
 val outputDir = "/data/large-output-coalesce"
 if (Files.exists(Paths.get(outputDir))) {
   println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
@@ -195,9 +179,12 @@ if (Files.exists(Paths.get(outputDir))) {
 }
 
 val originalWithNoise = returnDatasetWhichRadomNoise(cachedDF)
-val finalUnion = myUnion.union(originalWithNoise.as[RoadNet])
+val finalUnion = cachedDF.as[RoadNet].
+    union(dataSetWhichAllTuplesContainsNull).
+    union(originalWithNoise.as[RoadNet]) 
 
-finalUnion.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
+finalUnion.coalesce(1).write.format("com.databricks.spark.csv").
+    option("header", "true").save(outputDir)
 val recQty = finalUnion.count
 
 println(s"Fazendo o Tidy de $recQty registros")

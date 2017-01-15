@@ -131,26 +131,12 @@ dataSetWhichAllTuplesContainsNull.count()
 // Long = 130245
 
 val dfSchema = df.schema
-val Array(ps1, ps2) = smallDataframe.randomSplit(Array(0.80, 0.20))
 
 val myList: java.util.List[String] = Arrays.asList("hello", "world")
 val namesColl: java.util.Collection[String] = myList.toSeq
 sparkSession.sparkContext.parallelize(myList)
-val outputDir = "output"
-if (Files.exists(Paths.get(outputDir))) {
-  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
-  deleteRecursively(new File(outputDir))
-}
-myUnion.toJavaRDD.saveAsTextFile(outputDir)
-// Gerando vários um único arquivo CSV no diretório /data/output-coalesce
-val outputDir = "/data/output-coalesce"
-if (Files.exists(Paths.get(outputDir))) {
-  println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
-  deleteRecursively(new File(outputDir))
-}
-myUnion.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
-// Aumentando o tamanho da saida
 
+// Aumentando o tamanho da saida
 def returnDatasetWhichRadomNoise(dsInput: Dataset[Row]) : Dataset[RoadNet] = {
   val datasetWithNoise = dsInput.map(row => {
     val r = scala.util.Random
@@ -184,8 +170,6 @@ def returnDatasetWhichRadomNoise(dsInput: Dataset[Row]) : Dataset[RoadNet] = {
   datasetWithNoise
 }
 
-returnDatasetWhichRadomNoise(smallDataframe).show()
-
 val outputDir = "/data/large-output-coalesce"
 if (Files.exists(Paths.get(outputDir))) {
   println("Diretório de saida já existe. Removendo diretório '" + outputDir + "'  ...")
@@ -193,9 +177,12 @@ if (Files.exists(Paths.get(outputDir))) {
 }
 
 val originalWithNoise = returnDatasetWhichRadomNoise(cachedDF)
-val finalUnion = myUnion.union(originalWithNoise.as[RoadNet])
+val finalUnion = cachedDF.as[RoadNet].
+    union(dataSetWhichAllTuplesContainsNull).
+    union(originalWithNoise.as[RoadNet]) 
 
-finalUnion.coalesce(1).write.format("com.databricks.spark.csv").option("header", "true").save(outputDir)
+finalUnion.coalesce(1).write.format("com.databricks.spark.csv").
+    option("header", "true").save(outputDir)
 val recQty = finalUnion.count
 
 println(s"Fazendo o Tidy de $recQty registros")
@@ -260,27 +247,28 @@ cl_factor = factor(cl$cluster)
 cl
 ```
 
-    ## K-means clustering with 8 clusters of sizes 122278, 136736, 89258, 81062, 88908, 69596, 196912, 85008
+    ## K-means clustering with 8 clusters of sizes 100132, 164942, 49380, 128806, 128008, 59290, 62666, 176534
     ## 
     ## Cluster means:
     ##       [,1]      [,2]
-    ## 1 57.45257 10.564718
-    ## 2 57.39898 10.131487
-    ## 3 56.93032  9.287195
-    ## 4 57.27323  9.720362
-    ## 5 56.85422  8.840570
-    ## 6 56.85808  8.460687
-    ## 7 56.94744 10.021957
-    ## 8 56.76721  9.669532
+    ## 1 56.75292  9.953103
+    ## 2 57.44726 10.487294
+    ## 3 56.71563  8.953861
+    ## 4 57.38660  9.870016
+    ## 5 56.90462  9.411837
+    ## 6 56.82352  8.435228
+    ## 7 56.99326  8.773218
+    ## 8 57.06320 10.025053
     ## 
     ## Clustering vector:
-    ##  [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+    ##  [1] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 7 7 7 7 7 7 7 7 7 7 7 7 6 6 6 6
     ## [36] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
     ##  [ reached getOption("max.print") -- omitted 869708 entries ]
     ## 
     ## Within cluster sum of squares by cluster:
-    ## [1] 8383.846 4989.938 3463.816 2169.264 3457.832 2444.448 7633.675 2705.772
-    ##  (between_SS / total_SS =  91.5 %)
+    ## [1]  4049.618 11950.849  1211.478  5476.355  6394.986  1767.351  1791.153
+    ## [8]  5642.107
+    ##  (between_SS / total_SS =  90.8 %)
     ## 
     ## Available components:
     ## 
