@@ -17,8 +17,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Este é um documento R Markdown. Markdown é um formato simples para gerar documentos HTML, DOCX e PDF.
 
-Preparando o ambiente para rodar o KMeans da implementação R com o mesmo dataset da implementação Spark
+## Preparação do ambiente
 
+Preparando o ambiente para rodar o KMeans da implementação R com o mesmo dataset da implementação Spark
 
 ```{r, echo=TRUE, eval=TRUE}
 options(max.print=50)
@@ -30,16 +31,24 @@ install.packages('ggplot2', dep = TRUE)
 install.packages('data.table', dep = TRUE)
 ```
 
-Lendo o Dataset e investigando no grafico
+### Lendo o Dataset
 
 ```{r, echo=TRUE, eval=TRUE}
 myOriginalDataset <- read.delim('/data/prepared-3D_spatial_network.csv', header = TRUE, sep = ',') 
 library(ggplot2)
+```
+
+### Investigando no grafico
+
+```{r, echo=TRUE, eval=FALSE}
 altPlot <- qplot(longitude, latitude, data = myOriginalDataset, colour = altitude)
 altPlot
 ```
 
-Rodando o KMeans para k = 8
+![](geo-plus-altitude.png) 
+
+
+### Rodando o KMeans para k = 8
 
 ```{r, echo=TRUE, eval=TRUE}
 myDataset = as.matrix(cbind(myOriginalDataset$latitude, myOriginalDataset$longitude), ncol=2)
