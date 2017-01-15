@@ -23,3 +23,7 @@ A aplicação foi desenvolvida com o Polymer e o código HTML é basicamente o s
   <google-map-marker latitude="57.44979207387094" longitude="10.417310567783787" title="57.44979207387094, 10.417310567783787" draggable="false" drag-events=""></google-map-marker>
 </google-map>
 ```
+
+A imagem gerada para estes dados acima é a seguinte:
+
+![](Kmeans-Centroids-3D_spatial_network.png)
